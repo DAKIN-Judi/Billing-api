@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Exceptions\ModelValidationExeption;
 use App\Exceptions\RequestValidationException;
 use App\Models\User;
-use App\Models\PointHistory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Mail\ConfirmMail;
@@ -94,7 +92,7 @@ class RegisterController extends Controller
         $request->merge([
             'email' => strtolower($request->input('email')),
         ]);
-        
+
         return customValidation($request, [
             'name' => 'required|string|max:255',
             'password' => 'required|string|min:6',
