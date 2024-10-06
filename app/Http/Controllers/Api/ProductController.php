@@ -189,7 +189,7 @@ class ProductController extends BaseController
         $data = customValidation($request, [
             'designation' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
-            'quantity' => 'required|integer',
+            'quantity' => 'sometimes|integer',
             'unit_price' => 'sometimes|int'
         ]);
 

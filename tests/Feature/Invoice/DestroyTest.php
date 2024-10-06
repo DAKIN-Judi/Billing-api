@@ -25,10 +25,12 @@ class DestroyTest extends TestCase
 
     public function test_delete_invoice_failure()
     {
-        $response = $this->deleteJson("/api/invoices/99999");
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->getAuthToken(),
+        ])->deleteJson("/api/invoices/99999");
         $response->assertStatus(404)
             ->assertJson([
-                'message' => 'Invoice not found'
+                'message' => 'Record not found.'
             ]);
     }
 }

@@ -21,6 +21,7 @@ class StoreTest extends TestCase
     {
         $payload = [
             'designation' => 'Product 1',
+            'quantity' => 1,
             'description' => 'Description of product 1',
             'unit_price' => 100,
         ];

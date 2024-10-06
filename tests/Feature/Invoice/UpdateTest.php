@@ -14,7 +14,9 @@ class UpdateTest extends TestCase
     {
         $invoice = Invoice::factory()->create();
         $data = ['name' => 'Updated Invoice'];
-        $response = $this->putJson("/api/invoices/{$invoice->id}", $data);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->getAuthToken(),
+        ])->putJson("/api/invoices/{$invoice->id}", $data);
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'success',
@@ -24,10 +26,12 @@ class UpdateTest extends TestCase
 
     public function test_update_invoice_failure()
     {
-        $response = $this->putJson("/api/invoices/99999", ['name' => 'Non-existent Invoice']);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->getAuthToken(),
+        ])->putJson("/api/invoices/99999", ['name' => 'Non-existent Invoice']);
         $response->assertStatus(404)
             ->assertJson([
-                'message' => 'Record not found'
+                'message' => 'Record not found.'
             ]);
     }
 }

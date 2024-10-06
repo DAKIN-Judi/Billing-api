@@ -24,7 +24,6 @@ class StoreTest extends TestCase
             'Authorization' => 'Bearer ' . $this->getAuthToken(),
         ])->postJson('/api/invoices', $data);
 
-        $response->dump();
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'success',

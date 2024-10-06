@@ -13,7 +13,9 @@ class ShowTest extends TestCase
     public function test_can_show_invoice_details_success()
     {
         $invoice = Invoice::factory()->create();
-        $response = $this->getJson("/api/invoices/{$invoice->id}");
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->getAuthToken(),
+        ])->getJson("/api/invoices/{$invoice->id}");
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'success',
@@ -28,7 +30,7 @@ class ShowTest extends TestCase
         ])->getJson("/api/invoices/99999");
         $response->assertStatus(404)
             ->assertJson([
-                'message' => 'Record not found'
+                'message' => 'Record not found.'
             ]);
     }
 }
