@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'prefix' => 'auth'
 ], function ($router) {
-    Route::get('/login', [LoginController::class, 'login']);
+    Route::post('/login', [LoginController::class, 'login']);
     Route::post('/register', [RegisterController::class, 'register']);
 });
 

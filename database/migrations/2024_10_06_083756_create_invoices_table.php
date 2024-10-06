@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->onDelete('set null');
             $table->string('name');
             $table->string('invoice_id');
-            $table->double('tax');
+            $table->double('tax')->nullable();
             $table->timestamps();
         });
     }

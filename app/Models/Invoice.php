@@ -30,4 +30,8 @@ class Invoice extends Model
         return $this->belongsToMany(Product::class, 'invoice_products')
                     ->withPivot('quantity', 'unit_price');
     }
+
+    public function invoiceProducts() {
+        return $this->hasMany(InvoiceProduct::class);
+    }
 }

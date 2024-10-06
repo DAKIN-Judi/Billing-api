@@ -30,6 +30,6 @@ class ConfirmMail extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.confirm_mail', array('token' => $this->code));
+        return $this->view('email.confirmation_mail', array('token' => $this->code));
     }
 }

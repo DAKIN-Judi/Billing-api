@@ -16,6 +16,9 @@
         {
             "url": "http://my-default-host.com",
             "description": "API Server"
+        },
+        {
+            "url": "http://127.0.0.1:8000/"
         }
     ],
     "paths": {
@@ -102,87 +105,33 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "User Registration",
-                "operationId": "register",
+                "summary": "Register a new user",
+                "description": "Register a new user and send a confirmation email with a confirmation code.",
+                "operationId": "registerUser",
                 "requestBody": {
-                    "description": "User register",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "first_name",
-                                    "last_name",
-                                    "password",
+                                    "name",
                                     "email",
-                                    "address",
-                                    "role_id",
-                                    "rgpd_confirmation"
+                                    "password"
                                 ],
                                 "properties": {
-                                    "first_name": {
+                                    "name": {
                                         "type": "string",
-                                        "example": "Evelyne "
-                                    },
-                                    "last_name": {
-                                        "type": "string",
-                                        "example": "KOUYE"
-                                    },
-                                    "password": {
-                                        "type": "string"
+                                        "example": "John Doe"
                                     },
                                     "email": {
                                         "type": "string",
-                                        "example": "joedo@gmail.com"
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
                                     },
-                                    "referral_code": {
+                                    "password": {
                                         "type": "string",
-                                        "example": "JDNCEOMK"
-                                    },
-                                    "address": {
-                                        "type": "string"
-                                    },
-                                    "role_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "rgpd_confirmation": {
-                                        "type": "boolean"
-                                    },
-                                    "long": {
-                                        "type": "number",
-                                        "format": "double"
-                                    },
-                                    "lat": {
-                                        "type": "number",
-                                        "format": "double"
-                                    },
-                                    "driver_licence": {
-                                        "type": "file"
-                                    },
-                                    "insurance": {
-                                        "type": "file"
-                                    },
-                                    "cni": {
-                                        "type": "file"
-                                    },
-                                    "driver_licence_number": {
-                                        "type": "string"
-                                    },
-                                    "licence_origin": {
-                                        "type": "file"
-                                    },
-                                    "courses": {
-                                        "type": "integer"
-                                    },
-                                    "gains": {
-                                        "type": "integer"
-                                    },
-                                    "phone_number": {
-                                        "type": "string"
-                                    },
-                                    "phone_prefix": {
-                                        "type": "string"
+                                        "format": "password",
+                                        "example": "secret123"
                                     }
                                 },
                                 "type": "object"
@@ -191,19 +140,49 @@
                     }
                 },
                 "responses": {
-                    "201": {
-                        "description": "Account created successfully",
+                    "200": {
+                        "description": "User created successfully",
                         "content": {
                             "application/json": {
-                                "schema": {}
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "john.doe@example.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     },
-                    "500": {
-                        "description": "Error occurred while saving user",
+                    "401": {
+                        "description": "Email unavailable",
                         "content": {
                             "application/json": {
-                                "schema": {}
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email indisponible"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     }
@@ -215,9 +194,9 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Confirms a user's email",
-                "description": "Validates the confirmation code and confirms the user's email if valid.",
-                "operationId": "ced0f921ba791acafcbfd5c14ae35792",
+                "summary": "Confirm user email",
+                "description": "Confirm the user's email using the confirmation code.",
+                "operationId": "confirmEmail",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -228,9 +207,8 @@
                                 ],
                                 "properties": {
                                     "confirm_code": {
-                                        "description": "The phone confirmation code",
-                                        "type": "string",
-                                        "example": "123456"
+                                        "type": "integer",
+                                        "example": 1234
                                     }
                                 },
                                 "type": "object"
@@ -245,10 +223,6 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "Numéro de tel confirmé avec succès"
@@ -265,9 +239,6 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "status": {
-                                            "type": "error"
-                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "Code de confirmation invalide"
@@ -277,34 +248,6 @@
                                 }
                             }
                         }
-                    },
-                    "400": {
-                        "description": "Validation errors",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Validation errors"
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "confirm_code": "The confirm code is required."
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Server error"
                     }
                 }
             }
@@ -315,10 +258,31 @@
                     "Auth"
                 ],
                 "summary": "Resend confirmation code",
+                "description": "Resend a new confirmation code to the user's email.",
                 "operationId": "resendConfirmationCode",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Verification code sent successfully",
+                        "description": "A verification code has been sent",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -332,29 +296,8 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
                     }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
+                }
             }
         },
         "/api/customers": {
@@ -708,6 +651,326 @@
                         "bearer": []
                     }
                 ]
+            }
+        },
+        "/api/invoices": {
+            "get": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Get list of invoices",
+                "description": "Returns paginated list of invoices",
+                "operationId": "2e947f49543378e8d1ac24fc3ebcdcc7",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Invoice name"
+                                            },
+                                            "customer_id": {
+                                                "type": "integer",
+                                                "example": 10
+                                            },
+                                            "products": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                }
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2023-10-06 12:30:00"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2023-10-06 14:30:00"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Create a new invoice",
+                "description": "Create a new invoice with specified details",
+                "operationId": "15892ddc0ad0649e0919d15345232fc5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Invoice 001"
+                                    },
+                                    "customer_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "products": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Invoice created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Invoice 001"
+                                        },
+                                        "customer_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "products": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer",
+                                                "example": 1
+                                            }
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2023-10-06 12:30:00"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2023-10-06 12:30:00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/invoices/{id}": {
+            "get": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Get invoice details",
+                "description": "Get details of a specific invoice by ID",
+                "operationId": "5d25d392f44d2cf516114d871e72ecb7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Invoice ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Invoice name"
+                                        },
+                                        "customer_id": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "products": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer",
+                                                "example": 5
+                                            }
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2023-10-06 12:30:00"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2023-10-06 14:30:00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Update invoice",
+                "description": "Update details of a specific invoice",
+                "operationId": "e5aa8abff3efb646c72e59724ecb13e3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Invoice ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Updated Invoice"
+                                    },
+                                    "products": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Invoice updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Updated Invoice"
+                                        },
+                                        "customer_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "products": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer",
+                                                "example": 1
+                                            }
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2023-10-06 12:30:00"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2023-10-06 12:30:00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Delete invoice",
+                "description": "Delete a specific invoice by ID",
+                "operationId": "410b8a2e4b097016c3dea391349a789b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Invoice ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Invoice deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invoice deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/products": {
@@ -1105,11 +1368,15 @@
     "tags": [
         {
             "name": "Auth",
-            "description": "Auth"
+            "description": "Authentication APIs"
         },
         {
             "name": "Customers",
             "description": "Customers"
+        },
+        {
+            "name": "Invoices",
+            "description": "Invoices"
         },
         {
             "name": "Products",

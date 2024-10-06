@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -43,16 +44,17 @@ class LoginController extends Controller
      *      ),
      * )
      */
-    
+
     public function login(Request $request)
     {
-        $token = Auth::attempt($this->validateLoginInfo($request));
+        $token = auth()->attempt($this->validateLoginInfo($request));
+
 
         if (!$token) {
             return sendError('Invalid email or password', null, 401);
         }
 
-        return sendResponse($this->respondWithToken($token));
+        return sendResponse($this->respondWithToken($token), 'Login successful');
     }
 
     protected function respondWithToken($token)

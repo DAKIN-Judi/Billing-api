@@ -82,7 +82,8 @@ class ProductController extends BaseController
     {
         $data = customValidation($request, [
             'designation' => 'required|string|max:255',
-            'description' => 'sometimes|string',
+            'description' => 'required|string',
+            'quantity' => 'required|integer',
             'unit_price' => 'required|int'
         ]);
 
@@ -154,6 +155,7 @@ class ProductController extends BaseController
      *         @OA\JsonContent(
      *             @OA\Property(property="designation", type="string", example="Updated Product Name"),
      *             @OA\Property(property="description", type="string", example="Updated Product Description"),
+     *             @OA\Property(property="quantity", type="integer", example=1),
      *             @OA\Property(property="unit_price", type="integer", example=200)
      *         )
      *     ),
@@ -187,6 +189,7 @@ class ProductController extends BaseController
         $data = customValidation($request, [
             'designation' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
+            'quantity' => 'required|integer',
             'unit_price' => 'sometimes|int'
         ]);
 

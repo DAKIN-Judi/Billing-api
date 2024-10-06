@@ -4,75 +4,68 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Exceptions\RequestValidationException;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Mail\ConfirmMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(name="Auth", description="Authentication APIs")
+ */
 class RegisterController extends Controller
 {
 
+
     /**
-     *  @OA\Post(
-     *      path="/api/auth/register",
-     *      tags={"Auth"},
-     *      summary="User Registration",
-     *      operationId="register",
+     * @OA\Post(
+     *     path="/api/auth/register",
+     *     tags={"Auth"},
+     *     summary="Register a new user",
+     *     description="Register a new user and send a confirmation email with a confirmation code.",
+     *     operationId="registerUser",
      *
      *     @OA\RequestBody(
-     *       required=true,
-     *       description="User register",
-     *       @OA\JsonContent(
-     *          required={"first_name", "last_name", "password","email","address", "role_id","rgpd_confirmation"},
-     *          @OA\Property(property="first_name", type="string", example="Evelyne "),
-     *          @OA\Property(property="last_name", type="string", example="KOUYE"),
-     *          @OA\Property(property="password", type="string"),
-     *          @OA\Property(property="email", type="string", example="joedo@gmail.com"),
-     *          @OA\Property(property="referral_code", type="string", example="JDNCEOMK"),
-     *          @OA\Property(property="address", type="string"),
-     *          @OA\Property(property="role_id", type="integer", example=1),
-     *          @OA\Property(property="rgpd_confirmation", type="boolean"),
-     *          @OA\Property(property="long", type="double"),
-     *          @OA\Property(property="lat", type="double"),
-     *          @OA\Property(property="driver_licence", type="file"),
-     *          @OA\Property(property="insurance", type="file"),
-     *          @OA\Property(property="cni", type="file"),
-     *          @OA\Property(property="driver_licence_number", type="string"),
-     *          @OA\Property(property="licence_origin", type="file"),
-     *          @OA\Property(property="courses", type="integer"),
-     *          @OA\Property(property="gains", type="integer"),
-     *          @OA\Property(property="phone_number", type="string"),
-     *          @OA\Property(property="phone_prefix", type="string"),
-     *      )
-     *    ),
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "email", "password"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="secret123")
+     *         )
+     *     ),
      *
-     *      @OA\Response(
-     *          response=201,
-     *          description="Account created successfully",
-     *          @OA\JsonContent()
-     *      ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="John Doe"),
+     *                 @OA\Property(property="email", type="string", format="email", example="john.doe@example.com")
+     *             )
+     *         )
+     *     ),
      *
-     *      @OA\Response(
-     *          response=500,
-     *          description="Error occurred while saving user",
-     *          @OA\JsonContent()
-     *      )
-     *  )
+     *     @OA\Response(
+     *         response=401,
+     *         description="Email unavailable",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Email indisponible")
+     *         )
+     *     )
+     * )
      */
     public function register(Request $request)
     {
         $data  = $this->registerValidation($request);
 
-        if (User::where('email', strtolower($request->email))->exists()) {
-            return sendError('Email indisponible', '', 401);
-        }
-
         $user = User::create($data);
 
         $this->sendConfirmationMail($user);
 
-        return sendResponse(['user' => $user], 'User created successfully');
+        return sendResponse(new UserResource($user), 'User created successfully');
     }
 
     function sendConfirmationMail($user)
@@ -100,51 +93,40 @@ class RegisterController extends Controller
         ]);
     }
 
+
     /**
      * @OA\Post(
      *     path="/api/auth/confirm-email",
      *     tags={"Auth"},
-     *     summary="Confirms a user's email",
-     *     description="Validates the confirmation code and confirms the user's email if valid.",
+     *     summary="Confirm user email",
+     *     description="Confirm the user's email using the confirmation code.",
+     *     operationId="confirmEmail",
+     *
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
      *             required={"confirm_code"},
-     *             @OA\Property(property="confirm_code", type="string", example="123456", description="The phone confirmation code"),
-     *         ),
+     *             @OA\Property(property="confirm_code", type="integer", example=1234)
+     *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Email confirmed successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="string", example="success"),
      *             @OA\Property(property="message", type="string", example="Numéro de tel confirmé avec succès")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Invalid confirmation code",
      *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="error"),
      *             @OA\Property(property="message", type="string", example="Code de confirmation invalide")
      *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Validation errors",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="error"),
-     *             @OA\Property(property="message", type="string", example="Validation errors"),
-     *             @OA\Property(property="errors", type="object", example={"confirm_code": "The confirm code is required."})
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Server error"
      *     )
      * )
      */
-
     function confirmEmail(Request $request)
     {
         $data = customValidation($request, ['confirm_code' => 'required|numeric']);
@@ -159,64 +141,60 @@ class RegisterController extends Controller
         }
     }
 
-     /**
+
+    /**
      * @OA\Post(
      *     path="/api/auth/resend-confirmation-code",
      *     tags={"Auth"},
-     *     security={ {"bearer": {} }},
      *     summary="Resend confirmation code",
+     *     description="Resend a new confirmation code to the user's email.",
      *     operationId="resendConfirmationCode",
+     *
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email"},
+     *             @OA\Property(property="email", type="string", format="email", example="john.doe@example.com")
+     *         )
+     *     ),
+     *
      *     @OA\Response(
      *         response=200,
-     *         description="Verification code sent successfully",
+     *         description="A verification code has been sent",
      *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="message",
-     *                 type="string",
-     *                 example="Un code de vérification vous a été envoyé par mail"
-     *             )
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="message",
-     *                 type="string",
-     *                 example="Unauthenticated."
-     *             )
-     *         ),
+     *             @OA\Property(property="message", type="string", example="Un code de vérification vous a été envoyé par mail")
+     *         )
      *     )
      * )
      */
 
-     function resendConfirmationCode(Request $request)
-     {
+    function resendConfirmationCode(Request $request)
+    {
         $email = $this->validateEmail($request)['email'];
-         $user = User::where('email', $email);
+        $user = User::where('email', $email);
 
-         do {
-             $code = rand(1111, 9999);
-         } while (User::where('confirm_code', $code)->exists());
+        do {
+            $code = rand(1111, 9999);
+        } while (User::where('confirm_code', $code)->exists());
 
-         Mail::to($email)->send(new ConfirmMail($code));
+        Mail::to($email)->send(new ConfirmMail($code));
 
-         $user->confirm_code = $code;
-         $user->save();
+        $user->confirm_code = $code;
+        $user->save();
 
-         return sendResponse(null, 'Un code de vérification vous a été envoyé par mail');
-     }
+        return sendResponse(null, 'Un code de vérification vous a été envoyé par mail');
+    }
 
-     function validateEmail($request) {
-         $validator = Validator::make($request->all(), [
-             'email' =>'required|email',
-         ]);
+    function validateEmail($request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
 
-         if ($validator->fails()) {
-             throw new RequestValidationException($validator->errors());
-         }
+        if ($validator->fails()) {
+            throw new RequestValidationException($validator->errors());
+        }
 
-         return $validator->validated();
-     }
+        return $validator->validated();
+    }
 }
