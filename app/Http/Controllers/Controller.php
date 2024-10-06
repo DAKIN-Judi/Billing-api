@@ -14,7 +14,18 @@ namespace App\Http\Controllers;
  *          name="Apache 2.0",
  *          url="http://www.apache.org/licences/LICENCE-2.0.html"
  *      )
- *  )
+ *  ),
+ *
+ *  @OA\SecurityScheme(
+ *     type="http",
+ *     description="Use a Bearer token to access this API",
+ *     name="Authorization",
+ *     in="header",
+ *     scheme="bearer",
+ *     bearerFormat="JWT",
+ *     securityScheme="bearerAuth",
+ * ),
+ *
  *
  *  @OA\Server(
  *      url=L5_SWAGGER_CONST_HOST,

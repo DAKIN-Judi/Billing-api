@@ -14,7 +14,7 @@ class CustomerController extends BaseController
      *     tags={"Customers"},
      *     summary="Get all customers",
      *     description="Returns a list of customers with pagination",
-     *     security={ {"bearer": {}} },
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="List of customers",

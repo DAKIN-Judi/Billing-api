@@ -14,11 +14,8 @@
     },
     "servers": [
         {
-            "url": "http://my-default-host.com",
+            "url": "http://127.0.0.1:8000/",
             "description": "API Server"
-        },
-        {
-            "url": "http://127.0.0.1:8000/"
         }
     ],
     "paths": {
@@ -380,7 +377,7 @@
                 },
                 "security": [
                     {
-                        "bearer": []
+                        "bearerAuth": []
                     }
                 ]
             },
@@ -1220,6 +1217,10 @@
                                         "type": "string",
                                         "example": "Updated Product Description"
                                     },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
                                     "unit_price": {
                                         "type": "integer",
                                         "example": 200
@@ -1365,6 +1366,18 @@
             }
         }
     },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Use a Bearer token to access this API",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
     "tags": [
         {
             "name": "Auth",
@@ -1381,6 +1394,15 @@
         {
             "name": "Products",
             "description": "Products"
+        }
+    ],
+    "security": [
+        {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
         }
     ]
 }
