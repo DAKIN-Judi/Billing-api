@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-
     /**
      * @OA\Post(
      *     path="/api/auth/login",
      *     tags={"Auth"},
      *     summary="User login",
      *     operationId="login",
-     *
      *     @OA\RequestBody(
      *       required=true,
      *       description="User login",
@@ -23,25 +21,29 @@ class LoginController extends Controller
      *          required={"email", "password"},
      *          @OA\Property(property="email", type="string", format="email", example="user@gmail.com"),
      *          @OA\Property(property="password", type="string", format="password", example="userUSER1234@")
-     *      )
-     *    ),
-     *
-     *      @OA\Response(
+     *       )
+     *     ),
+     *     @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @OA\JsonContent()
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(property="access_token", type="string", example="your_jwt_token"),
+     *              @OA\Property(property="token_type", type="string", example="bearer"),
+     *              @OA\Property(property="expires_in", type="integer", example=3600)
+     *          )
      *      ),
-     *
-     *      @OA\Response(
+     *     @OA\Response(
      *          response=401,
      *          description="Invalid email or password",
-     *          @OA\JsonContent()
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(property="message", type="string", example="Invalid email or password")
+     *          )
      *      ),
-     *
-     *
      * )
      */
-
+    
     public function login(Request $request)
     {
         $token = Auth::attempt($this->validateLoginInfo($request));
@@ -52,6 +54,7 @@ class LoginController extends Controller
 
         return sendResponse($this->respondWithToken($token));
     }
+
     protected function respondWithToken($token)
     {
         return [

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Exceptions\RequestValidationException;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Mail\ConfirmMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -130,7 +130,7 @@ class RegisterController extends Controller
      *         )
      *     ),
      *     @OA\Response(
-     *         response=422,
+     *         response=400,
      *         description="Validation errors",
      *         @OA\JsonContent(
      *             @OA\Property(property="status", type="error"),

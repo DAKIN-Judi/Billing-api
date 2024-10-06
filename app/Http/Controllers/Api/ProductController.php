@@ -20,7 +20,7 @@ class ProductController extends BaseController
      *         response=200,
      *         description="List of products",
      *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Product"))
+     *             @OA\Property(property="data", type="array", @OA\Items(ref=""))
      *         )
      *     ),
      *     @OA\Response(
@@ -57,12 +57,12 @@ class ProductController extends BaseController
      *         response=201,
      *         description="Product created successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="data", ref="#/components/schemas/Product"),
+     *             @OA\Property(property="data", ref=""),
      *             @OA\Property(property="message", type="string", example="Product created successfully")
      *         )
      *     ),
      *     @OA\Response(
-     *         response=422,
+     *         response=400,
      *         description="Validation error",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="The given data was invalid.")
@@ -109,7 +109,7 @@ class ProductController extends BaseController
      *         response=200,
      *         description="Product details",
      *         @OA\JsonContent(
-     *             @OA\Property(property="data", ref="#/components/schemas/Product")
+     *             @OA\Property(property="data", ref="")
      *         )
      *     ),
      *     @OA\Response(
@@ -161,7 +161,7 @@ class ProductController extends BaseController
      *         response=200,
      *         description="Product updated successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="data", ref="#/components/schemas/Product"),
+     *             @OA\Property(property="data", ref=""),
      *             @OA\Property(property="message", type="string", example="Product updated successfully")
      *         )
      *     ),

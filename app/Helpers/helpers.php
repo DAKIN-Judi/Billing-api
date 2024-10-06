@@ -65,3 +65,21 @@ if (!function_exists('customValidation')) {
         return $validator->validated();
     }
 }
+
+if (!function_exists('calculateTax')) {
+
+    function calculateTax($amount, $taxRate = 18) {
+        return $amount * ($taxRate / 100);
+    }
+}
+
+
+if (!function_exists('determineTax')) {
+
+    function determineTax($invoice, $taxRate = 18) {
+        $totalAmount = $invoice->products->sum('quantity * unit_price');
+        $tax = calculateTax($totalAmount, $taxRate);
+
+        $invoice->update(['tax' => $tax]);
+    }
+}

@@ -23,7 +23,7 @@ class CustomerController extends BaseController
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/Customer")
+     *                 @OA\Items(ref="")
      *             ),
      *             @OA\Property(
      *                 property="links",
@@ -86,7 +86,7 @@ class CustomerController extends BaseController
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 ref="#/components/schemas/CustomerResource"
+     *                 ref=""
      *             ),
      *             @OA\Property(
      *                 property="message",
@@ -96,7 +96,7 @@ class CustomerController extends BaseController
      *         )
      *     ),
      *     @OA\Response(
-     *         response=422,
+     *         response=400,
      *         description="Validation errors",
      *         @OA\JsonContent(
      *             @OA\Property(
@@ -152,7 +152,7 @@ class CustomerController extends BaseController
      *         response=200,
      *         description="Customer details",
      *         @OA\JsonContent(
-     *             @OA\Property(property="data", ref="#/components/schemas/Customer")
+     *             @OA\Property(property="data", ref="")
      *         )
      *     ),
      *     @OA\Response(
@@ -214,7 +214,7 @@ class CustomerController extends BaseController
      *         response=200,
      *         description="Customer updated successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="data", ref="#/components/schemas/Customer"),
+     *             @OA\Property(property="data", ref=""),
      *             @OA\Property(
      *                 property="message",
      *                 type="string",

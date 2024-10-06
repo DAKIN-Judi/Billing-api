@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id');
+            $table->foreignId('customer_id')->onDelete('set null');
             $table->string('name');
             $table->string('invoice_id');
+            $table->double('tax');
             $table->timestamps();
         });
     }

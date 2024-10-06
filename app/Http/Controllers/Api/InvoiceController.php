@@ -2,33 +2,32 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 
 class InvoiceController extends BaseController
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return sendResponse(InvoiceResource::collection(Invoice::paginate()));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = customValidation($request, [
+            'name' => 'required|string|max:255',
+            'customer_id' => 'required|integer|exists:customers,id',
+            'products' => 'required|array',
+            'products.*' => 'integer|exists:products,id'
+        ]);
+
+        $invoice = Invoice::create($data);
+
+        $this->saveProductAndTax($request, $data, $invoice);
+        
+        return sendResponse(new InvoiceResource($invoice), 'Invoice created successfully');
     }
 
     /**
@@ -36,23 +35,35 @@ class InvoiceController extends BaseController
      */
     public function show(Invoice $invoice)
     {
-        //
+        return sendResponse(new InvoiceResource($invoice));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Invoice $invoice)
     {
-        //
+        return sendResponse(new InvoiceResource($invoice));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Invoice $invoice)
     {
-        //
+        $data = customValidation($request, [
+            'name' => 'sometimes|string|max:255',
+            'products' => 'sometimes|array',
+            'products.*' => 'integer|exists:products,id'
+        ]);
+
+        $invoice->update($data);
+
+        $this->saveProductAndTax($request, $data, $invoice);
+
+        return sendResponse(new InvoiceResource($invoice), 'Invoice updated successfully');
+    }
+
+    public function saveProductAndTax($request, $data, $invoice) {
+        if ($request->has('products')) {
+            $invoice->products()->sync($data['products']);
+        }
+
+        determineTax($invoice);
     }
 
     /**
@@ -60,6 +71,7 @@ class InvoiceController extends BaseController
      */
     public function destroy(Invoice $invoice)
     {
-        //
+        $invoice->delete();
+        return sendResponse([], 'Invoice deleted successfully');
     }
 }

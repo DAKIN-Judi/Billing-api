@@ -51,10 +51,8 @@ class IndexTest extends TestCase
             'Authorization' => 'Bearer invalid_token',
         ])->getJson('/api/customers');
 
-        // Vérifier que la réponse a un statut 401 (Unauthenticated)
         $response->assertStatus(401);
 
-        // Vérifier que le message de l'erreur est "Unauthenticated."
         $response->assertJson([
             'message' => 'Unauthenticated.'
         ]);
